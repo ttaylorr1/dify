@@ -1117,6 +1117,17 @@ class CeleryScheduleTasksConfig(BaseSettings):
     )
 
 
+class SandboxMessagesCleanConfig(BaseSettings):
+    SANDBOX_MESSAGES_CLEAN_GRACEFUL_PERIOD: PositiveInt = Field(
+        description="Graceful period in days for sandbox messages clean after subscription expiration",
+        default=8,
+    )
+    SANDBOX_MESSAGES_CLEAN_BATCH_SIZE: PositiveInt = Field(
+        description="Maximum number of messages to process in each batch",
+        default=1000,
+    )
+
+
 class PositionConfig(BaseSettings):
     POSITION_PROVIDER_PINS: str = Field(
         description="Comma-separated list of pinned model providers",
@@ -1264,6 +1275,7 @@ class FeatureConfig(
     PositionConfig,
     RagEtlConfig,
     RepositoryConfig,
+    SandboxMessagesCleanConfig,
     SecurityConfig,
     TenantIsolatedTaskQueueConfig,
     ToolConfig,
