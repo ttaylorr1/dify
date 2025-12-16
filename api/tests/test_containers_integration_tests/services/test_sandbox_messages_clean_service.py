@@ -363,9 +363,7 @@ class TestSandboxMessagesCleanServiceIntegration:
         assert db.session.query(Message).where(Message.id.in_(paid_message_ids)).count() == 4
 
         # Related records of sandbox messages should be deleted
-        assert (
-            db.session.query(MessageFeedback).where(MessageFeedback.message_id.in_(sandbox_message_ids)).count() == 0
-        )
+        assert db.session.query(MessageFeedback).where(MessageFeedback.message_id.in_(sandbox_message_ids)).count() == 0
         assert (
             db.session.query(MessageAnnotation).where(MessageAnnotation.message_id.in_(sandbox_message_ids)).count()
             == 0
