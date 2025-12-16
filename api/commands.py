@@ -1939,7 +1939,7 @@ def clean_expired_sandbox_messages(
     click.echo(click.style("clean_messages: start clean messages.", fg="green"))
 
     start_at = time.perf_counter()
-    
+
     try:
         stats = SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
             start_from=start_from,
@@ -1948,7 +1948,7 @@ def clean_expired_sandbox_messages(
             batch_size=batch_size,
             dry_run=dry_run,
         )
-        
+
         end_at = time.perf_counter()
         click.echo(
             click.style(

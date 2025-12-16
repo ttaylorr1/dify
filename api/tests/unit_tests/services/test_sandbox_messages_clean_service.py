@@ -34,10 +34,8 @@ class TestFilterExpiredSandboxMessages:
             MockMessage("msg2", "app2"),
         ]
         app_to_tenant = {}  # No mapping
-        tenant_plans = {
-            "tenant1": {"plan": CloudPlan.SANDBOX, "expiration_date": -1}
-        }
-        
+        tenant_plans = {"tenant1": {"plan": CloudPlan.SANDBOX, "expiration_date": -1}}
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -46,7 +44,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=1000000,
         )
-        
+
         # Assert
         assert result == []
 
@@ -62,7 +60,7 @@ class TestFilterExpiredSandboxMessages:
             "app2": "tenant2",
         }
         tenant_plans = {}  # No plans
-        
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -71,7 +69,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=1000000,
         )
-        
+
         # Assert
         assert result == []
 
@@ -93,7 +91,7 @@ class TestFilterExpiredSandboxMessages:
             "tenant2": {"plan": CloudPlan.SANDBOX, "expiration_date": -1},
             "tenant3": {"plan": CloudPlan.SANDBOX, "expiration_date": -1},
         }
-        
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -102,7 +100,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=1000000,
         )
-        
+
         # Assert - all messages should be deleted
         assert set(result) == {"msg1", "msg2", "msg3"}
 
@@ -114,7 +112,7 @@ class TestFilterExpiredSandboxMessages:
         expired_1_day_ago = now - (1 * 24 * 60 * 60)
         expired_3_days_ago = now - (3 * 24 * 60 * 60)
         expired_7_days_ago = now - (7 * 24 * 60 * 60)
-        
+
         messages = [
             MockMessage("msg1", "app1"),
             MockMessage("msg2", "app2"),
@@ -130,7 +128,7 @@ class TestFilterExpiredSandboxMessages:
             "tenant2": {"plan": CloudPlan.SANDBOX, "expiration_date": expired_3_days_ago},
             "tenant3": {"plan": CloudPlan.SANDBOX, "expiration_date": expired_7_days_ago},
         }
-        
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -139,7 +137,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=now,
         )
-        
+
         # Assert - no messages should be deleted
         assert result == []
 
@@ -148,14 +146,14 @@ class TestFilterExpiredSandboxMessages:
         # Arrange
         now = 1000000
         graceful_period = 8
-        
+
         # Different expiration scenarios
-        expired_5_days_ago = now - (5 * 24 * 60 * 60)   # Within grace - keep
+        expired_5_days_ago = now - (5 * 24 * 60 * 60)  # Within grace - keep
         expired_10_days_ago = now - (10 * 24 * 60 * 60)  # Beyond grace - delete
         expired_30_days_ago = now - (30 * 24 * 60 * 60)  # Beyond grace - delete
         expired_exactly_8_days_ago = now - (8 * 24 * 60 * 60)  # Exactly at boundary - keep
-        expired_9_days_ago = now - (9 * 24 * 60 * 60)   # Just beyond - delete
-        
+        expired_9_days_ago = now - (9 * 24 * 60 * 60)  # Just beyond - delete
+
         messages = [
             MockMessage("msg1", "app1"),  # Within grace
             MockMessage("msg2", "app2"),  # Beyond grace
@@ -180,7 +178,7 @@ class TestFilterExpiredSandboxMessages:
             "tenant5": {"plan": CloudPlan.SANDBOX, "expiration_date": expired_exactly_8_days_ago},
             "tenant6": {"plan": CloudPlan.SANDBOX, "expiration_date": expired_9_days_ago},
         }
-        
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -189,7 +187,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=graceful_period,
             current_timestamp=now,
         )
-        
+
         # Assert - msg2, msg3, msg4, msg6 should be deleted
         # msg1 and msg5 are within/at grace period boundary
         assert set(result) == {"msg2", "msg3", "msg4", "msg6"}
@@ -201,7 +199,7 @@ class TestFilterExpiredSandboxMessages:
         sandbox_expired_old = now - (15 * 24 * 60 * 60)  # 15 days ago - beyond grace
         sandbox_expired_recent = now - (3 * 24 * 60 * 60)  # 3 days ago - within grace
         future_expiration = now + (30 * 24 * 60 * 60)  # 30 days in future - active paid plan
-        
+
         messages = [
             MockMessage("msg1", "app1"),  # Sandbox, no subscription - delete
             MockMessage("msg2", "app2"),  # Sandbox, expired old - delete
@@ -228,7 +226,7 @@ class TestFilterExpiredSandboxMessages:
             "tenant7": {"plan": CloudPlan.SANDBOX, "expiration_date": sandbox_expired_old},
             # tenant6 has no plan
         }
-        
+
         # Act
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -237,7 +235,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=now,
         )
-        
+
         # Assert - only sandbox expired beyond grace period and no subscription
         assert set(result) == {"msg1", "msg2", "msg7"}
 
@@ -251,7 +249,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             current_timestamp=1000000,
         )
-        
+
         # Assert
         assert result1 == []
 
@@ -260,10 +258,8 @@ class TestFilterExpiredSandboxMessages:
         # Arrange
         messages = [MockMessage("msg1", "app1")]
         app_to_tenant = {"app1": "tenant1"}
-        tenant_plans = {
-            "tenant1": {"plan": CloudPlan.SANDBOX, "expiration_date": -1}
-        }
-        
+        tenant_plans = {"tenant1": {"plan": CloudPlan.SANDBOX, "expiration_date": -1}}
+
         # Act - don't provide current_timestamp
         result = SandboxMessagesCleanService._filter_expired_sandbox_messages(
             messages=messages,
@@ -272,7 +268,7 @@ class TestFilterExpiredSandboxMessages:
             graceful_period_days=8,
             # current_timestamp not provided - should use datetime.now()
         )
-        
+
         # Assert - should still work and return msg1 (no subscription)
         assert result == ["msg1"]
 
@@ -288,13 +284,13 @@ class TestCleanSandboxMessagesByTimeRange:
         end_before = datetime.datetime(2024, 12, 31, 23, 59, 59)
         batch_size = 500
         dry_run = True
-        
+
         mock_clean.return_value = {
             "batches": 5,
             "total_messages": 100,
             "total_deleted": 100,
         }
-        
+
         # Act
         SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
             start_from=start_from,
@@ -302,7 +298,7 @@ class TestCleanSandboxMessagesByTimeRange:
             batch_size=batch_size,
             dry_run=dry_run,
         )
-        
+
         # Assert, expected no exception raised
         mock_clean.assert_called_once_with(
             start_from=start_from,
@@ -318,19 +314,19 @@ class TestCleanSandboxMessagesByTimeRange:
         # Arrange
         start_from = datetime.datetime(2024, 1, 1)
         end_before = datetime.datetime(2024, 2, 1)
-        
+
         mock_clean.return_value = {
             "batches": 2,
             "total_messages": 50,
             "total_deleted": 0,
         }
-        
+
         # Act
         SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
             start_from=start_from,
             end_before=end_before,
         )
-        
+
         # Assert
         mock_clean.assert_called_once_with(
             start_from=start_from,
@@ -344,7 +340,7 @@ class TestCleanSandboxMessagesByTimeRange:
         """Test invalid time range raises ValueError."""
         # Arrange
         same_time = datetime.datetime(2024, 1, 1, 12, 0, 0)
-        
+
         # Act & Assert start equals end
         with pytest.raises(ValueError, match="start_from .* must be less than end_before"):
             SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
@@ -355,7 +351,7 @@ class TestCleanSandboxMessagesByTimeRange:
         # Arrange
         start_from = datetime.datetime(2024, 12, 31)
         end_before = datetime.datetime(2024, 1, 1)
-        
+
         # Act & Assert start after end
         with pytest.raises(ValueError, match="start_from .* must be less than end_before"):
             SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
@@ -368,7 +364,7 @@ class TestCleanSandboxMessagesByTimeRange:
         # Arrange
         start_from = datetime.datetime(2024, 1, 1)
         end_before = datetime.datetime(2024, 2, 1)
-        
+
         # Act & Assert batch_size = 0
         with pytest.raises(ValueError, match="batch_size .* must be greater than 0"):
             SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
@@ -376,7 +372,7 @@ class TestCleanSandboxMessagesByTimeRange:
                 end_before=end_before,
                 batch_size=0,
             )
-        
+
         # Act & Assert batch_size < 0
         with pytest.raises(ValueError, match="batch_size .* must be greater than 0"):
             SandboxMessagesCleanService.clean_sandbox_messages_by_time_range(
@@ -394,17 +390,17 @@ class TestCleanSandboxMessagesByDays:
         """Test with default 30 days."""
         # Arrange
         mock_clean.return_value = {"batches": 3, "total_messages": 75, "total_deleted": 75}
-        
+
         # Act
         with patch("services.sandbox_messages_clean_service.datetime") as mock_datetime:
             fixed_now = datetime.datetime(2024, 6, 15, 10, 30, 0)
             mock_datetime.datetime.now.return_value = fixed_now
             mock_datetime.timedelta = datetime.timedelta  # Keep original timedelta
-            
+
             SandboxMessagesCleanService.clean_sandbox_messages_by_days()
-        
+
         # Assert
-        expected_end_before = fixed_now - datetime.timedelta(days=30)   # default days=30
+        expected_end_before = fixed_now - datetime.timedelta(days=30)  # default days=30
         mock_clean.assert_called_once_with(
             end_before=expected_end_before,
             start_from=None,
@@ -419,15 +415,15 @@ class TestCleanSandboxMessagesByDays:
         # Arrange
         custom_days = 90
         mock_clean.return_value = {"batches": 10, "total_messages": 500, "total_deleted": 500}
-        
+
         # Act
         with patch("services.sandbox_messages_clean_service.datetime") as mock_datetime:
             fixed_now = datetime.datetime(2024, 6, 15, 10, 30, 0)
             mock_datetime.datetime.now.return_value = fixed_now
             mock_datetime.timedelta = datetime.timedelta  # Keep original timedelta
-            
+
             result = SandboxMessagesCleanService.clean_sandbox_messages_by_days(days=custom_days)
-        
+
         # Assert
         expected_end_before = fixed_now - datetime.timedelta(days=custom_days)
         mock_clean.assert_called_once_with(
@@ -443,15 +439,15 @@ class TestCleanSandboxMessagesByDays:
         """Test with days=0 (clean all messages before now)."""
         # Arrange
         mock_clean.return_value = {"batches": 0, "total_messages": 0, "total_deleted": 0}
-        
+
         # Act
         with patch("services.sandbox_messages_clean_service.datetime") as mock_datetime:
             fixed_now = datetime.datetime(2024, 6, 15, 14, 0, 0)
             mock_datetime.datetime.now.return_value = fixed_now
             mock_datetime.timedelta = datetime.timedelta  # Keep original timedelta
-            
+
             SandboxMessagesCleanService.clean_sandbox_messages_by_days(days=0)
-        
+
         # Assert
         expected_end_before = fixed_now - datetime.timedelta(days=0)  # same as fixed_now
         mock_clean.assert_called_once_with(
@@ -470,7 +466,7 @@ class TestCleanSandboxMessagesByDays:
                 days=30,
                 batch_size=0,
             )
-        
+
         # Act & Assert batch_size < 0
         with pytest.raises(ValueError, match="batch_size .* must be greater than 0"):
             SandboxMessagesCleanService.clean_sandbox_messages_by_days(
